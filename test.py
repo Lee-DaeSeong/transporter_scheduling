@@ -26,13 +26,13 @@ def generate_population(size):
                 else:
                     # 해당 트랜스포터의 맨 마지막 작업 뒤에 새로운 작업 추가
                     prev = [trans.works[-1].start_node, trans.works[-1].end_node]
-                    pick_up_time = random.uniform(trans.works_time[-1][1], 18 + 1)
+                    pick_up_time = random.uniform(max(trans.works_time[-1][1], block.start_time), 18 + 1)
 
-                prev_to_start = math.dist(prev, block.start_pos) / 1000
-                start_to_end = math.dist(block.start_pos, block.end_pos) / 1000
+                prev_to_start_dist = math.dist(prev, block.start_pos) / 1000
+                start_to_end_dist = math.dist(block.start_pos, block.end_pos) / 1000
 
-                prev_to_start_time = prev_to_start / trans.empty_speed
-                start_to_end_time = start_to_end / trans.work_speed
+                prev_to_start_time = prev_to_start_dist / trans.empty_speed
+                start_to_end_time = start_to_end_dist / trans.work_speed
                 finish_time = pick_up_time + prev_to_start_time + start_to_end_time
 
                 flag = True
@@ -49,13 +49,13 @@ def generate_population(size):
     return ret
 
 
-population = generate_population(10)
+population = generate_population(100)
+
+for t in population[0]:
+    print(t.works_time)
 
 
-# for t in population[0]:
-#     print(t.works_time)
-
-def get_fitnees(pop):
+def get_fitness(pop):
     score = 0
     transporter_cnt = 0
     using_time = 0
@@ -65,7 +65,24 @@ def get_fitnees(pop):
             for start, end in t.works_time:
                 using_time += end - start
 
-    return transporter_cnt, using_time
+    # return transporter_cnt, using_time
+    return transporter_cnt
 
-for pop in population:
-    print(get_fitnees(pop))
+
+def select_survivors(population, best_sample, lucky_few):
+    fitness = [[x, get_fitness(x)] for x in population]
+    fitness.sort(key=lambda x: x[1])
+
+    next_generation = []
+    for i in range(best_sample):
+        next_generation.append(fitness[i][0])
+
+    for lucky in random.sample(fitness, k=lucky_few):
+        next_generation.append(lucky)
+
+    random.shuffle(next_generation)
+    return next_generation
+
+
+# survivors = select_survivors(population, 30, 20)
+

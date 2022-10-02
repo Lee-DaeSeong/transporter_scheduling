@@ -62,4 +62,6 @@ for i in range(1, 101):
     dist = math.dist(start_pos, end_pos) / 1000
     blocks.append(block(i, w, start_node, end_node, start_time, end_time, start_pos, end_pos, dist))
 
+# for block in blocks:
+#     print(block)
 # blocks.sort(key = lambda x:x.end_time)

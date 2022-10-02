@@ -28,6 +28,8 @@ if file.exists():
     for n, a, e, w in temp:
         transporters.append(transporter(n, a, e, w))
 
+    for transporter in transporters:
+        print(transporter)
 else:
     #file.touch()
     print(0)
